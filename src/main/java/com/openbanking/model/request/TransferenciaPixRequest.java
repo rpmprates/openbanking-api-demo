@@ -1,5 +1,6 @@
 package com.openbanking.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 public class TransferenciaPixRequest {
     private String contaOrigemId;
     private String contaDestinoId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "#0.00")
     private BigDecimal valor;
     private String moeda;
 

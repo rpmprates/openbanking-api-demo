@@ -2,20 +2,20 @@ openapi: 3.0.0
 info:
   title: API Open Banking
   description: API para operações de Open Banking, incluindo consulta de saldo, dados cadastrais, extrato, transferência PIX e consulta de limite de crédito.
-  version: "1.1.0"
+  version: "1.2.0"
 servers:
   - url: http://localhost:8080
     description: Servidor local para desenvolvimento e testes
+
 paths:
-  /open-banking/contas/{contaId}/saldo:
+  /open-banking/saldo:
     get:
       summary: Consulta o saldo disponível de uma conta bancária
-      description: Retorna o saldo atual disponível de uma conta bancária informada por ID.
       parameters:
-        - name: contaId
-          in: path
+        - name: conta
+          in: query
           required: true
-          description: Identificador único da conta bancária
+          description: Identificador da conta bancária
           schema:
             type: string
       responses:
@@ -26,21 +26,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ContaDTO'
         '404':
-          description: Conta bancária não encontrada
+          description: Conta não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
 
-  /open-banking/clientes/{clienteId}/dados:
+  /open-banking/dados-cliente:
     get:
       summary: Consulta dados cadastrais do cliente
-      description: Retorna dados pessoais do cliente, conforme autorização de compartilhamento.
       parameters:
-        - name: clienteId
-          in: path
+        - name: cliente
+          in: query
           required: true
-          description: Identificador único do cliente
+          description: Identificador do cliente
           schema:
             type: string
       responses:
@@ -57,15 +56,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
 
-  /open-banking/clientes/{clienteId}/contas:
+  /open-banking/contas-cliente:
     get:
       summary: Consulta todas as contas do cliente
-      description: Retorna a lista de contas vinculadas ao cliente.
       parameters:
-        - name: clienteId
-          in: path
+        - name: cliente
+          in: query
           required: true
-          description: Identificador único do cliente
+          description: Identificador do cliente
           schema:
             type: string
       responses:
@@ -78,15 +76,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/ContaDTO'
 
-  /open-banking/contas/{contaId}/transacoes:
+  /open-banking/transacoes:
     get:
       summary: Consulta o extrato da conta
-      description: Retorna as últimas transações realizadas na conta.
       parameters:
-        - name: contaId
-          in: path
+        - name: conta
+          in: query
           required: true
-          description: Identificador único da conta bancária
+          description: Identificador da conta bancária
           schema:
             type: string
       responses:
@@ -108,7 +105,6 @@ paths:
   /open-banking/pix/transferencias:
     post:
       summary: Realiza uma simulação de transferência PIX
-      description: Simula uma transferência PIX entre duas contas bancárias.
       requestBody:
         required: true
         content:
@@ -135,15 +131,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErroResponse'
 
-  /open-banking/clientes/{clienteId}/limite-credito:
+  /open-banking/limite-credito:
     get:
       summary: Consulta limite de crédito pré-aprovado
-      description: Retorna informações sobre o limite de crédito disponível para o cliente.
       parameters:
-        - name: clienteId
-          in: path
+        - name: cliente
+          in: query
           required: true
-          description: Identificador único do cliente
+          description: Identificador do cliente
           schema:
             type: string
       responses:
@@ -167,20 +162,16 @@ components:
       properties:
         contaId:
           type: string
-          description: Identificador da conta bancária
           example: "123"
         tipoConta:
           type: string
-          description: Tipo da conta bancária
           example: "Corrente"
         saldoDisponivel:
           type: number
           format: double
-          description: Saldo disponível na conta
           example: 1500.00
         moeda:
           type: string
-          description: Moeda da conta
           example: "BRL"
 
     ClienteDTO:
@@ -188,19 +179,15 @@ components:
       properties:
         clienteId:
           type: string
-          description: Identificador do cliente
           example: "c123"
         nome:
           type: string
-          description: Nome completo do cliente
           example: "João da Silva"
         cpf:
           type: string
-          description: CPF do cliente
           example: "123.456.789-00"
         email:
           type: string
-          description: E-mail do cliente
           example: "joao@email.com"
 
     TransacaoDTO:
@@ -209,75 +196,61 @@ components:
         data:
           type: string
           format: date
-          description: Data da transação
           example: "2025-06-12"
         descricao:
           type: string
-          description: Descrição da transação
           example: "Pagamento de boleto"
         valor:
           type: number
           format: double
-          description: Valor da transação
           example: -200.00
         moeda:
           type: string
-          description: Moeda usada na transação
           example: "BRL"
 
     TransferenciaPixRequest:
       type: object
-      properties:
-        contaOrigemId:
-          type: string
-          description: Identificador da conta de origem
-          example: "123"
-        contaDestinoId:
-          type: string
-          description: Identificador da conta de destino
-          example: "124"
-        valor:
-          type: number
-          format: double
-          description: Valor a ser transferido
-          example: 200.00
-        moeda:
-          type: string
-          description: Moeda da transferência
-          example: "BRL"
       required:
         - contaOrigemId
         - contaDestinoId
         - valor
         - moeda
+      properties:
+        contaOrigemId:
+          type: string
+          example: "123"
+        contaDestinoId:
+          type: string
+          example: "124"
+        valor:
+          type: number
+          format: double
+          example: 200.00
+        moeda:
+          type: string
+          example: "BRL"
 
     TransferenciaPixResponse:
       type: object
       properties:
         transactionId:
           type: string
-          description: Identificador único da transação PIX
           example: "c4f1b2f9-8a1e-4db0-9a1a-5d6e2a7b8c9d"
         mensagem:
           type: string
-          description: Mensagem de confirmação
           example: "Transferência PIX realizada com sucesso"
         contaOrigemId:
           type: string
-          description: Conta de origem
           example: "123"
         contaDestinoId:
           type: string
-          description: Conta de destino
           example: "124"
         valor:
           type: number
           format: double
-          description: Valor transferido
           example: 200.00
         moeda:
           type: string
-          description: Moeda da transferência
           example: "BRL"
 
     LimiteCreditoDTO:
@@ -285,31 +258,25 @@ components:
       properties:
         clienteId:
           type: string
-          description: Identificador do cliente
           example: "c123"
         limiteCredito:
           type: number
           format: double
-          description: Valor do limite de crédito disponível
-          example: 10000.00
+          example: 15000.00
         moeda:
           type: string
-          description: Moeda do limite de crédito
           example: "BRL"
         taxaJuros:
           type: number
           format: double
-          description: Taxa de juros aplicada ao crédito
-          example: 2.5
+          example: 3.50
 
     ErroResponse:
       type: object
       properties:
         codigoErro:
           type: string
-          description: Código de erro HTTP
           example: "404"
         mensagem:
           type: string
-          description: Mensagem descritiva do erro
           example: "Recurso não encontrado."

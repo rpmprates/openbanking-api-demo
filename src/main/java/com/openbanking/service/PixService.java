@@ -1,17 +1,9 @@
 package com.openbanking.service;
 
-
 import com.openbanking.exceptions.PixInvalidoException;
 import com.openbanking.model.request.TransferenciaPixRequest;
 import com.openbanking.model.response.TransferenciaPixResponse;
 import org.springframework.stereotype.Service;
-
-
-
-
-
-
-
 import java.math.BigDecimal;
 import java.util.UUID;
 

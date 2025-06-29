@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/open-banking")
 public class OpenBankingController {
@@ -30,34 +29,33 @@ public class OpenBankingController {
         this.pixService = pixService;
     }
 
-    @GetMapping("/contas/{contaId}/saldo")
-    public ContaDTO consultarSaldo(@PathVariable String contaId) {
+    @GetMapping("/saldo")
+    public ContaDTO consultarSaldo(@RequestParam("conta") String contaId) {
         return contaService.consultarSaldo(contaId);
     }
 
-    @GetMapping("/clientes/{clienteId}/dados")
-    public ClienteDTO consultarDadosCliente(@PathVariable String clienteId) {
+    @GetMapping("/dados-cliente")
+    public ClienteDTO consultarDadosCliente(@RequestParam("cliente") String clienteId) {
         return clienteService.consultarDadosCliente(clienteId);
     }
 
-    @GetMapping("/clientes/{clienteId}/contas")
-    public List<ContaDTO> listarContasCliente(@PathVariable String clienteId) {
+    @GetMapping("/contas-cliente")
+    public List<ContaDTO> listarContasCliente(@RequestParam("cliente") String clienteId) {
         return contaService.listarContasCliente(clienteId);
     }
 
-    @GetMapping("/contas/{contaId}/transacoes")
-    public List<TransacaoDTO> listarTransacoes(@PathVariable String contaId) {
+    @GetMapping("/transacoes")
+    public List<TransacaoDTO> listarTransacoes(@RequestParam("conta") String contaId) {
         return contaService.listarTransacoes(contaId);
     }
 
     @PostMapping("/pix/transferencias")
-    public TransferenciaPixResponse realizarTransferenciaPix(
-            @RequestBody TransferenciaPixRequest request) {
+    public TransferenciaPixResponse realizarTransferenciaPix(@RequestBody TransferenciaPixRequest request) {
         return pixService.realizarTransferencia(request);
     }
 
-    @GetMapping("/clientes/{clienteId}/limite-credito")
-    public LimiteCreditoDTO consultarLimiteCredito(@PathVariable String clienteId) {
+    @GetMapping("/limite-credito")
+    public LimiteCreditoDTO consultarLimiteCredito(@RequestParam("cliente") String clienteId) {
         return clienteService.consultarLimiteCredito(clienteId);
     }
 }
